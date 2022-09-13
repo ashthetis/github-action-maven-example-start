@@ -29,7 +29,6 @@ jobs:
         with:
           java-version: 14
         
-      
 
       
   Build:
@@ -66,18 +65,18 @@ jobs:
           path: test
       
     
-  Code_Quality_Scan:
-    needs: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - name: Code Quality
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-        continue-on-error: true
+#   Code_Quality_Scan:
+#     needs: Build
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v1
+#       - name: Code Quality
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+#         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+#         continue-on-error: true
         
 #   Create_Artifact:
 #     needs: Code_Quality_Scan
@@ -89,14 +88,14 @@ jobs:
 #           mkdir stg
 #           cp target/*jar-with-dependencies.jar stg
           
-  Publish-Artifact:
-    needs: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
+#   Publish-Artifact:
+#     needs: Build
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v1
 
-      - name: Publish Artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: build_artifact
-          path: stg
+#       - name: Publish Artifact
+#         uses: actions/upload-artifact@v1
+#         with:
+#           name: build_artifact
+#           path: stg
