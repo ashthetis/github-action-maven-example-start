@@ -21,7 +21,14 @@ jobs:
       - name: Build Applicaition
         run: mvn -B package --file pom.xml
         
-      
+      - name: Code Quality
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        continue-on-error: true
+        
       - name: Package Artifact
         run: |
           mkdir stg
@@ -32,3 +39,4 @@ jobs:
         with:
           name: build_artifact
           path: stg
+    
