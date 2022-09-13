@@ -27,7 +27,7 @@ jobs:
           cp target/*jar-with-dependencies.jar stg
       
       - name: Publish Artifact
-        uses: actions/upload@v1
+        uses: actions/upload-artifact@v1
         with:
           name: build_artifact
           path: stg
