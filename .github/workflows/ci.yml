@@ -39,26 +39,31 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build Applicaition
         run: mvn -B package --file pom.xml
-      - name: Create 
-        run: |
-          mkdir stg
-          cp target/*jar-with-dependencies.jar stg
+      - name: Build_artifact
+        uses: actions/upload-artifact@v1
+        with: 
+          name: build-artifact
+          path: .
   
-#   Unit_Tests:
-#     needs: Build
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v1
-#       - name: Create 
-#         run: |
-#           mkdir test
-#           cp target/jacoco.exec test
-#         continue-on-error: true
-#       - name: Upload Code Coverage Artifact
-#         uses: actions/upload-artifact@v1
-#         with: 
-#           name: code_quality_test
-#           path: test
+  Unit_Tests:
+    needs: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Create 
+        uses: actions/download-artifact@v1
+        with: 
+          name: build-artifact
+          path: .
+      - run: |
+          mkdir test
+          cp target/jacoco.exec test
+ 
+      - name: Upload Code Coverage Artifact
+        uses: actions/upload-artifact@v1
+        with: 
+          name: code_quality_test
+          path: test
       
     
   Code_Quality_Scan:
