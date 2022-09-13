@@ -61,7 +61,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        App
+                                        LicensingService
                                     </mainClass>
                                 </manifest>
                             </archive>
