@@ -45,11 +45,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+      - name: Create 
+        run: |
+          mkdir test
+          cp target/jacoco.exec test
       - name: Upload Code Coverage Artifact
         uses: actions/upload-artifact@v1
         with: 
           name: code_quality_test
-          path: ./target/jacoco.exec
+          path: test
       
     
   Code_Quality_Scan:
