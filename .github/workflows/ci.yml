@@ -2,7 +2,8 @@ name: CI
 on:
   workflow_dispatch:
 jobs:
-  build:
+  
+  Pre-Build-Tasks:
     runs-on: ubuntu-latest
     
     services:
@@ -27,10 +28,29 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 14
+        
       
+
+      
+  Build:
+    runs-on: ubuntu-latest
+    steps:
       - name: Build Applicaition
         run: mvn -B package --file pom.xml
-        
+  
+  Unit-Tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload Code Coverage Artifact
+        uses: actions/upload-artifact@v1
+        with: 
+          name: code_quality_test
+          path: target/jacoco.exec
+      
+    
+  Code-Quality-Scan:
+    runs-on: ubuntu-latest
+    steps:
       - name: Code Quality
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
@@ -38,21 +58,20 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
         continue-on-error: true
-      
-      - name: Upload Code Coverage Artifact
-        uses: actions/upload-artifact@v1
-        with: 
-          name: code_quality_test
-          path: target/jacoco.exec
         
-      - name: Package Artifact
+  Create-Artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create 
         run: |
           mkdir stg
           cp target/*jar-with-dependencies.jar stg
-      
+          
+  Publish-Artifact:
+    runs-on: ubuntu-latest
+    steps:
       - name: Publish Artifact
         uses: actions/upload-artifact@v1
         with:
           name: build_artifact
-          path: stg
-    
+        path: stg
