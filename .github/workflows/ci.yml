@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 jobs:
   
-  Pre-Build-Tasks:
+  Pre_Build_Tasks:
     runs-on: ubuntu-latest
     
     services:
@@ -33,12 +33,14 @@ jobs:
 
       
   Build:
+    needs: Pre_Build_Tasks
     runs-on: ubuntu-latest
     steps:
       - name: Build Applicaition
         run: mvn -B package --file pom.xml
   
-  Unit-Tests:
+  Unit_Tests:
+    needs: Build
     runs-on: ubuntu-latest
     steps:
       - name: Upload Code Coverage Artifact
@@ -48,7 +50,8 @@ jobs:
           path: target/jacoco.exec
       
     
-  Code-Quality-Scan:
+  Code_Quality_Scan:
+    needs: Unit_Tests
     runs-on: ubuntu-latest
     steps:
       - name: Code Quality
@@ -59,7 +62,8 @@ jobs:
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
         continue-on-error: true
         
-  Create-Artifact:
+  Create_Artifact:
+    needs: Code_Quality_Scan
     runs-on: ubuntu-latest
     steps:
       - name: Create 
@@ -68,6 +72,7 @@ jobs:
           cp target/*jar-with-dependencies.jar stg
           
   Publish-Artifact:
+    needs: Create_Artifact
     runs-on: ubuntu-latest
     steps:
       - name: Publish Artifact
