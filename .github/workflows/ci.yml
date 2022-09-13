@@ -4,20 +4,30 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    services:
+      node:
+        image: node
+#       gradle: 
+#         image: gradle
+#       dotnet: 
+#         image: maven
+
     steps:
       - uses: actions/checkout@v1
 
-      - name: Use Java
-        uses: actions/setup-java@v1
-        with:
-          java-version: 14
-      - name: Cache the Maven packages to speed up build
+      - name: Cache the packages
         uses: actions/cache@v1
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-
+        
+      - name: Use Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 14
+      
       - name: Build Applicaition
         run: mvn -B package --file pom.xml
         
@@ -28,6 +38,12 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
         continue-on-error: true
+      
+      - name: Upload Code Coverage Artifact
+        uses: actions/upload-artifact@v1
+        with: 
+          name: code_quality_test
+          path: target/jacoco.exec
         
       - name: Package Artifact
         run: |
