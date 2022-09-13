@@ -13,3 +13,10 @@ jobs:
 
       - name: Build Applicaition
         run: mvn -B package --file pom.xml
+        
+      - name: Cache the Maven packages to speed up build
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2    
