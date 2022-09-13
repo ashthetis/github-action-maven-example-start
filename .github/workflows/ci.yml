@@ -49,7 +49,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with: 
           name: code_quality_test
-          path: target/jacoco.exec
+          path: ./target/jacoco.exec
       
     
   Code_Quality_Scan:
