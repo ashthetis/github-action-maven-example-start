@@ -74,4 +74,4 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: build_artifact
-        path: stg
+          path: stg
