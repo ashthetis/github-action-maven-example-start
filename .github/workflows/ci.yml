@@ -39,6 +39,8 @@ jobs:
       - name: Build Applicaition
         run: |
           mvn -B package --file pom.xml
+          mkdir test
+          cp target/jacoco.exec test
       - name: Upload Code Coverage Artifact
         uses: actions/upload-artifact@v1
         with: 
