@@ -29,20 +29,10 @@ jobs:
         with:
           java-version: 14
         
-
-      
-  Build:
-    needs: Pre_Build_Tasks
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Applicaition
-        run: |
-          mvn -B package --file pom.xml
           
 
-  Unit_Tests:
-    needs: Build
+  Build_Test:
+    needs: Pre_Build_Tasks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -57,7 +47,7 @@ jobs:
       
       
   Code_Quality_Scan:
-    needs: Build
+    needs: Build_Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -71,9 +61,25 @@ jobs:
           mvn sonar:sonar --batch-mode --quiet -Dsonar.host.url=http://localhost:9000 -Dsonar.token=SONAR.TOKEN
         continue-on-error: true
         
-          
+  Vercode_Pipeline_Scan:
+    needs: Code_Quality_Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - run: |
+          echo "Vercode pipeline scane stage
+        
+  Vercode_SCA_Scan:
+    needs: Vercode_Pipeline_Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - run: |
+          echo "Vercode pipeline scane stage          
+    
+  
   Publish_Artifact:
-    needs: [Build,Code_Quality_Scan]
+    needs: Code_Quality_Scan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
