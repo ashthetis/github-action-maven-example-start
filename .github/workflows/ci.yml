@@ -39,64 +39,71 @@ jobs:
       - name: Build Applicaition
         run: |
           mvn -B package --file pom.xml
-          mkdir tar
-          cp target/* tar
           
-      - name: Build_artifact
-        uses: actions/upload-artifact@v1
-        with: 
-          name: build-artifact
-          path: tar
-  
+
   Unit_Tests:
     needs: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: Create 
-        uses: actions/download-artifact@v1
+      - name: Build Applicaition
+        run: |
+          mvn -B package --file pom.xml
+      - name: Upload Code Coverage Artifact
+        uses: actions/upload-artifact@v1
         with: 
-          name: build-artifact
-          path: tar
-
-#       - name: Upload Code Coverage Artifact
-#         uses: actions/upload-artifact@v1
-#         with: 
-#           name: code_quality_test
-#           path: test
+          name: code_quality_test
+          path: test
       
-    
-#   Code_Quality_Scan:
-#     needs: Build
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v1
-#       - name: Code Quality
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-#           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-#         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-#         continue-on-error: true
-        
-#   Create_Artifact:
-#     needs: Code_Quality_Scan
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v1
-#       - name: Create 
-#         run: |
-#           mkdir stg
-#           cp target/*jar-with-dependencies.jar stg
+      
+  Code_Quality_Scan:
+    needs: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Code Quality
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
           
-#   Publish-Artifact:
-#     needs: Build
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v1
+          mvn sonar:sonar --batch-mode --quiet -Dsonar.host.url=http://localhost:9000 -Dsonar.token=SONAR.TOKEN
+        continue-on-error: true
+        
+          
+  Publish_Artifact:
+    needs: [Build,Code_Quality_Scan]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build Applicaition
+        run: |
+          mvn -B package --file pom.xml
+      - name: Create 
+        run: |
+          mkdir stg
+          cp target/*jar-with-dependencies.jar stg
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: build_artifact
+          path: stg
+  
+  Create_Deployment_Package:
+    
+    needs: Publish_Artifact
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - run: |
+          echo "Create_Deployment_Package"
 
-#       - name: Publish Artifact
-#         uses: actions/upload-artifact@v1
-#         with:
-#           name: build_artifact
-#           path: stg
+  Tag_Deployment_Artifact:
+    
+    needs: Create_Deployment_Package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - run: |
+          echo "Tag_Deployment_Artifact"
