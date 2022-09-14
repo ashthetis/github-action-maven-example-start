@@ -37,12 +37,16 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Build Applicaition
-        run: mvn -B package --file pom.xml
+        run: |
+          mvn -B package --file pom.xml
+          mkdir tar
+          cp target/* tar
+          
       - name: Build_artifact
         uses: actions/upload-artifact@v1
         with: 
           name: build-artifact
-          path: target
+          path: tar
   
   Unit_Tests:
     needs: Build
@@ -53,16 +57,13 @@ jobs:
         uses: actions/download-artifact@v1
         with: 
           name: build-artifact
-          path: target
-      - run: |
-          mkdir test
-          cp target/jacoco.exec test
- 
-      - name: Upload Code Coverage Artifact
-        uses: actions/upload-artifact@v1
-        with: 
-          name: code_quality_test
-          path: test
+          path: tar
+
+#       - name: Upload Code Coverage Artifact
+#         uses: actions/upload-artifact@v1
+#         with: 
+#           name: code_quality_test
+#           path: test
       
     
 #   Code_Quality_Scan:
