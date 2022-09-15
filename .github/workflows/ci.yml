@@ -53,7 +53,7 @@ jobs:
     steps:
       - name: Dockerized sonar scan testing
         uses: SonarSource/sonarqube-scan-action@master
-        with: 
+        env: 
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       
