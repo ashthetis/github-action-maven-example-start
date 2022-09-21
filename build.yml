@@ -1,0 +1,12 @@
+---
+v: 0.0.0
+d:
+  - n: app-favorite # Change this to the wanted image name/kube label appname
+    p: Docker/BaseJava
+    l: java11
+lam: []
+dep:
+  inf:
+    p: t_inf
+  dep:
+    p: t_dep
